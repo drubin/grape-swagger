@@ -54,6 +54,7 @@ module Grape
             @@hide_documentation_path = options[:hide_documentation_path]
             api_version = options[:api_version]
             base_path = options[:base_path]
+            base_path_suffix = options[:base_path_suffix]
 
             desc 'Swagger compatible API description'
             get @@mount_path do
@@ -68,10 +69,12 @@ module Grape
               routes_array = routes.keys.map do |local_route|
                   { :path => "#{parse_path(route.route_path.gsub('(.:format)', ''),route.route_version)}/#{local_route}.{format}" }
               end
+              path = base_path || request.base_url
+              path = path + base_path_suffix
               {
                 apiVersion: api_version,
                 swaggerVersion: "1.1",
-                basePath: base_path || request.base_url,
+                basePath: path,
                 operations:[],
                 apis: routes_array
               }
@@ -102,11 +105,12 @@ module Grape
                   :operations => [operations]
                 }
               end
-
+              path = base_path || request.base_url
+              path = path + base_path_suffix
               {
                 apiVersion: api_version,
                 swaggerVersion: "1.1",
-                basePath: base_path || request.base_url,
+                basePath: path,
                 resourcePath: "",
                 apis: routes_array
               }
